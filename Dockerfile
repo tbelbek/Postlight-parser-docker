@@ -1,18 +1,18 @@
 # Use the official Node.js image as the base image
-FROM node:14
+FROM node:16
 
 # Set the working directory
 WORKDIR /usr/src/app
 
-# Create package.json and install dependencies
+# Install dependencies
 RUN npm init -y && \
-    npm install @postlight/parser express
+    npm install @postlight/parser express @mozilla/readability jsdom node-fetch
 
 # Copy the application code
-COPY index.js .
+COPY index.mjs .
 
 # Expose the port the app runs on
 EXPOSE 80
 
 # Command to run the application
-CMD ["node", "index.js"]
+CMD ["node", "index.mjs"]

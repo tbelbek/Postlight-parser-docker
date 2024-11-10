@@ -1,8 +1,15 @@
-const express = require('express');
-const { parse } = require('@postlight/parser');
+import express from 'express';
+import pkg from '@postlight/parser';
+import { Readability } from '@mozilla/readability';
+import { JSDOM } from 'jsdom';
+import fetch from 'node-fetch';
+
+const { parse } = pkg;
 
 const app = express();
 const port = 80;
+
+app.use(express.json()); // Add this line to parse JSON bodies
 
 // Middleware to log incoming requests and responses
 app.use((req, res, next) => {
@@ -37,7 +44,6 @@ app.get('/parser', async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
-
 
 app.post('/', async (req, res) => {
   const { url } = req.body;
