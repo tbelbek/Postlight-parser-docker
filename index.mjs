@@ -21,7 +21,14 @@ app.use((req, res, next) => {
   // Override the end method to log the response status code
   res.end = function (...args) {
     const duration = Date.now() - start;
-    console.log(`${req.method} ${req.url} - ${res.statusCode} - ${duration}ms`);
+    const logMessage = `${req.method} ${req.url} - ${res.statusCode} - ${duration}ms`;
+
+    if (req.method === 'POST') {
+      console.log(`${logMessage} - Body: ${JSON.stringify(req.body)}`);
+    } else {
+      console.log(logMessage);
+    }
+
     originalEnd.apply(this, args);
   };
 
@@ -57,8 +64,12 @@ app.post('/', async (req, res) => {
     const dom = new JSDOM(html);
     const reader = new Readability(dom.window.document);
     const article = reader.parse();
+    if (article && article.content) {
+      article.content += '<p style="font-size: smaller; font-style: italic;">Parsed by PP</p>';
+    }
     res.send(article);
   } catch (error) {
+    console.error(`Error fetching and parsing URL: ${url}`, error);
     res.status(500).send({ error: 'Failed to fetch and parse the URL' });
   }
 });
